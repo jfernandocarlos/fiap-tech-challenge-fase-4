@@ -1,0 +1,29 @@
+# Hiperparâmetros do pipeline de credit scoring.
+# Infraestrutura (paths, MLflow URI) fica no .env via Settings.
+
+data:
+  n_samples: 8000
+  test_size: 0.2
+  random_seed: 42
+
+model:
+  n_estimators: 100
+  max_depth: 6
+  learning_rate: 0.1
+
+drift:
+  # Features que serão deslocadas na simulação de produção
+  shifted_features:
+    - income
+    - late_payments
+  income_multiplier: 1.45
+  late_payments_add: 1.8
+  # Limiares estatísticos
+  psi_threshold: 0.20
+  ks_pvalue_threshold: 0.05
+
+validation:
+  age_min: 18
+  age_max: 75
+  income_min: 500.0
+  loan_amount_min: 1000.0
