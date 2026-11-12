@@ -14,6 +14,7 @@ from pathlib import Path
 from credit.data.contracts import DataContractError, validate_dataframe
 from credit.data.loader import load_csv
 from credit.logging_config import setup_logging
+from credit.monitoring.pipeline_logs import append_event
 
 
 def main() -> int:
@@ -26,11 +27,17 @@ def main() -> int:
     try:
         validate_dataframe(df, raise_on_error=True)
     except DataContractError as exc:
+        append_event(
+            "validate_data",
+            "failure",
+            {"path": str(args.csv_path), "errors": exc.failure_cases[:5]},
+        )
         print(f"BLOQUEADO: {exc}")
         for case in exc.failure_cases[:10]:
             print(f"  - {case}")
         return 1
 
+    append_event("validate_data", "success", {"path": str(args.csv_path), "rows": len(df)})
     print(f"OK: contrato válido ({len(df)} linhas) — {args.csv_path}")
     return 0
 
